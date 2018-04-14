@@ -20,6 +20,7 @@ function startGame() {
 		myPlayer = new gameObject(64,64, "pika.gif", 10, 120, "image");
 		myWall = new gameObject	(10, 300, "black", 200,0, "box");
 		myGoal	= new gameObject	(10,10, "green", 600, 400, "box");
+		myWall2 = new gameObject	(10, 300, "black", 400,200, "box");
 	}
 
 var myGame = {
@@ -61,7 +62,7 @@ function updateGame() {
     
     myPlayer.newPos(); 
 
-    if(checkCollision(myPlayer, myWall)) {
+    if(checkCollision(myPlayer, myWall) || checkCollision(myPlayer, myWall2) ) {
     	//this means we hit a wall, reset speed so we dont move forward
 			myPlayer.speedX *= -1;
 			myPlayer.speedY *= -1;
@@ -75,6 +76,7 @@ function updateGame() {
 
     myPlayer.update();
     myWall.update();
+     myWall2.update();
     myGoal.update();
 
 
