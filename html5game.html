@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+</style>
+</head>
+<body onload="startGame()">
+<script>
+	var myPlayer;
+	var myWall;
+	var myGoal;
+
+function startGame() {
+		myGame.start();
+		myPlayer = new gameObject(64,64, "pika.gif", 10, 120, "image");
+		myWall = new gameObject	(10, 300, "black", 200,0, "box");
+		myGoal	= new gameObject	(10,10, "green", 600, 400, "box");
+	}
+
+var myGame = {
+   canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 640;
+        this.canvas.height = 480;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGame, 20);
+
+        window.addEventListener('keydown', function (e) {
+            myGame.key = e.keyCode;
+        })
+        window.addEventListener('keyup', function (e) {
+            myGame.key = false;
+        })
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    stop : function() {
+        clearInterval(this.interval);
+    }
+}
+
+function updateGame() {
+ 
+ myGame.clear();
+
+    //Reset player speed
+    myPlayer.speedX = 0;
+    myPlayer.speedY = 0;   
+ //arrow key tracking
+    if (myGame.key && myGame.key == 37) {myPlayer.speedX = -5; }
+    if (myGame.key && myGame.key == 39) {myPlayer.speedX = 5; }
+    if (myGame.key && myGame.key == 38) {myPlayer.speedY = -5; }
+    if (myGame.key && myGame.key == 40) {myPlayer.speedY = 5; }
+    
+    myPlayer.newPos(); 
+
+    if(checkCollision(myPlayer, myWall)) {
+    	//this means we hit a wall, reset speed so we dont move forward
+			myPlayer.speedX *= -1;
+			myPlayer.speedY *= -1;
+			myPlayer.newPos();	
+		}   
+
+	if(checkCollision(myPlayer, myGoal) ){
+			var text = showText("You Win!");
+			myGame.stop();
+	}
+
+    myPlayer.update();
+    myWall.update();
+    myGoal.update();
+
+
+}
+
+function gameObject(width, height, color, x, y, type)
+{
+	this.type = type;
+  	if (type == "image") {
+    this.image = new Image();
+    this.image.src = color;  // we just use the color var as the name
+  	}
+	this.width = width;
+	this.height = height;
+	this.x = x;
+	this.y = y;
+	this.speedX = 0;
+	this.speedY = 0;
+	ctx = myGame.context;
+	
+    if (type == "image") {
+      ctx.drawImage(this.image, 
+        this.x, 
+        this.y,
+        this.width, this.height);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+  		}
+
+	this.update = function() {
+        ctx = myGame.context;
+        if (type == "image") {
+	     	ctx.drawImage(this.image, 
+	        this.x, 
+	        this.y,
+	        this.width, this.height);
+    		} else {
+		      ctx.fillStyle = color;
+		      ctx.fillRect(this.x, this.y, this.width, this.height);
+  				}
+    }
+
+    this.newPos = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;        
+    }
+}
+
+function showText (text)
+{
+	console.log(text);
+
+		var ctx = myGame.context;
+		ctx.font = "30px Arial";
+		ctx.fillText(text, 300, 200);
+		
+}
+
+function checkCollision(myObject, other) {
+			 
+        var collide = true;
+        if (
+        	((myObject.y + (myObject.height)) < other.y) ||
+               (myObject.y > (other.y + (other.height))) ||
+               ( (myObject.x + (myObject.width)) < other.x) ||
+               (myObject.x > other.x + (other.width))
+               ){
+           collide = false;
+        }
+        else collide = true;
+
+        return collide;
+		}
+
+
+
+</script>
+Hello world... 
+</body>
+</html>
